@@ -8,7 +8,7 @@ classdef fifoBuffer < handle
         vInd;
     end
     
-    methods(Access = public)
+    methods(Access = 'public')
         
         function obj = fifoBuffer(elements)
             

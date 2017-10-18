@@ -5,7 +5,7 @@ classdef audioHandler < handle
     
     properties(GetAccess = 'public', SetAccess = 'private')
         bIsInitialized = playrec('isInitialized')
-        audioDeviceID
+        nAudioDeviceID
     end
     
     properties(GetAccess = 'private', SetAccess = 'private')
@@ -19,19 +19,19 @@ classdef audioHandler < handle
         sDeviceName = 'Microphone (USB Audio CODEC )';
     end
     
-    methods(Access = public)
+    methods(Access = 'public')
         function obj = audioHandler(nSampleRate, nPageLenInSamples, nNumPages)
             obj.initialize(obj.getDeviceIDByName(obj.sDeviceName), nSampleRate, nPageLenInSamples, nNumPages);
         end
         
         function initialize(obj, nDeviceID, nSampleRate, nPageLenInSamples, nNumPages)
-            obj.audioDeviceID = nDeviceID;
+            obj.nAudioDeviceID = nDeviceID;
             obj.nSampleRate = nSampleRate;
             obj.nPageLenInSamples = nPageLenInSamples;
             obj.nNumPages = nNumPages;
             obj.pageIDStore = fifoBuffer;
             
-            playrec('init', obj.nSampleRate, -1, obj.audioDeviceID);
+            playrec('init', obj.nSampleRate, -1, obj.nAudioDeviceID);
         end
         
         function start(obj)
@@ -43,17 +43,20 @@ classdef audioHandler < handle
             nCurrentPageID = obj.pageIDStore.dequeue();
             playrec('block', nCurrentPageID);
             vmData = playrec('getRec', nCurrentPageID);
+            playrec('delPage', currentPageID);
+            obj.pageIDStore.enqueue(playrec('rec', obj.nPageLenInSamples, 1));
         end
         
         function stop(obj)
             if(obj.bIsInitialized)
-                playrec('delPage');
-                playrec('reset');
+                playrec('delPage');     
             end
+            
+            playrec('reset');
         end
     end
     
-    methods(Access = private)
+    methods(Access = 'private')
         function nDeviceID = getDeviceIDByName(~, sDeviceName)
             devices = playrec('getDevices');
             
