@@ -9,14 +9,22 @@ classdef signalHistory < handle
     
     methods(Access = 'public')
         function obj = signalHistory(nSize)
+            obj.vData = zeros(1, nSize);
             obj.nSize = nSize;
         end
         
         function store(obj, vSignalSegment)
-            
-            if(length(obj.vData) + length(vSignalSegment) <= obj.nSize)
-                obj.vData = [obj.vData vSignalSegment];
+            if(length(vSignalSegment) <= obj.nSize)
+                obj.vData = circshift(obj.vData, -obj.minClamp((length(vSignalSegment) + length(obj.vData) - obj.nSize), 0));
+                %obj.vData = [obj.vData(1:(abs(length(obj.vData) - length(vSignalSegment)))) vSignalSegment];
+                obj.vData = [obj.vData(1:(abs(obj.nSize - length(vSignalSegment)))) vSignalSegment];
             end
+        end
+    end
+    
+    methods(Access = 'private')
+        function value = minClamp(~, value, min)
+            value(value < min) = min;
         end
     end
 end
