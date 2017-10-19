@@ -20,6 +20,10 @@ classdef signalHistory < handle
                 obj.vData = [obj.vData(1:(abs(obj.nSize - length(vSignalSegment)))) vSignalSegment];
             end
         end
+        
+        function plus(obj, vSignalSegment) 
+            obj.store(vSignalSegment);
+        end
     end
     
     methods(Access = 'private')

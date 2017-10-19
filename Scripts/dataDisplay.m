@@ -1,14 +1,16 @@
 classdef dataDisplay < handle
     
-    properties(GetAccess = 'private', SetAccess = 'private')
+    properties(GetAccess = 'public', SetAccess = 'private')
        startButton
        stopButton
        diagramm
     end
     
      properties(GetAccess = 'private', Constant)
-       buttonRatio = 0.4;
+       buttonWidthRatio = 0.4;
        buttonSpace = 20;
+       diagrammWidthRatio = 0.9;
+       diagrammHeightRatio = 0.5;
      end
     
     methods(Access = 'public')
@@ -16,20 +18,31 @@ classdef dataDisplay < handle
             f = figure('Name', 'EKG', 'Color', 'white', 'ResizeFcn', {@(src, event)resizeCallback(obj, src, event)});
             
             obj.startButton = uicontrol(f, 'Style', 'pushbutton', 'String', 'Start', 'Callback',{@(src, ~)startCallback(obj, src, runner)});
-            obj.stopButton = uicontrol(f, 'Style', 'pushbutton', 'String', 'Stop', 'Callback', {@(src, ~)stopCallback(obj, src, runner)});
-            %obj.diagramm = axes(f, 'Position', [], 'Box', 'on');
+            %obj.stopButton = uicontrol(f, 'Style', 'togglebutton', 'String', 'Stop', 'Callback', {@(src, ~)stopCallback(obj, src, runner)});
+            obj.stopButton = uicontrol(f, 'Style', 'togglebutton', 'String', 'Stop');
+            obj.diagramm = axes(f, 'Box', 'on');
+            
+            axes(obj.diagramm);
             
             obj.placeComponents(f.Position);
+        end
+        
+        function showData(~, vData)
+           plot(vData); 
         end
     end
     
     methods(Access = 'private')
         function placeComponents(obj, figurePosition)
             width = figurePosition(3);
-            buttonWidth = width * obj.buttonRatio;
+            height = figurePosition(4);
+            buttonWidth = width * obj.buttonWidthRatio;
+            diagrammWidth = width * obj.diagrammWidthRatio;
+            diagrammHeight = height * obj.diagrammHeightRatio;
+            
             set(obj.startButton, 'Position', [((width / 2) - buttonWidth - (obj.buttonSpace / 2)) 20 buttonWidth 20]);
             set(obj.stopButton, 'Position', [((width / 2) + (obj.buttonSpace / 2)) 20 buttonWidth 20]);
-            %diagramm set
+            set(obj.diagramm, 'OuterPosition', [5 (height - diagrammHeight) diagrammWidth diagrammHeight]);
         end
     end
     
@@ -39,12 +52,12 @@ classdef dataDisplay < handle
             obj.placeComponents(src.Position);
         end
         
-        function startCallback(obj, ~, runner)
-            runner.running = true;
+        function startCallback(~, ~, runner)
+            runner.start;
         end
         
-        function stopCallback(obj, ~, runner)
-            runner.running = false;
+        function stopCallback(~, src, runner)
+        
         end
     end
 end

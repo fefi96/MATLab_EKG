@@ -4,7 +4,7 @@ classdef audioHandler < handle
     %end
     
     properties(GetAccess = 'public', SetAccess = 'private')
-        bIsInitialized = playrec('isInitialized')
+        %bIsInitialized = playrec('isInitialized')
         nAudioDeviceID
     end
     
@@ -65,9 +65,11 @@ classdef audioHandler < handle
             for i = 1:r
                 if(strcmp(devices(i).name, sDeviceName))
                     nDeviceID = devices(i).deviceID;
-                    break;
+                    return;
                 end
             end
+            
+            nDeviceID  = -1;
         end
     end
 end
