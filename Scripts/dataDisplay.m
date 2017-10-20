@@ -1,24 +1,24 @@
 classdef dataDisplay < handle
     
     properties(GetAccess = 'public', SetAccess = 'private')
-       startButton
-       stopButton
-       diagramm
+        startButton
+        stopButton
+        diagramm
     end
     
-     properties(GetAccess = 'private', Constant)
-       buttonWidthRatio = 0.4;
-       buttonSpace = 20;
-       diagrammWidthRatio = 0.9;
-       diagrammHeightRatio = 0.7;
-     end
+    properties(GetAccess = 'private', Constant)
+        buttonWidthRatio = 0.4;
+        buttonSpace = 20;
+        diagrammWidthRatio = 0.9;
+        diagrammHeightRatio = 0.7;
+    end
     
     methods(Access = 'public')
         function obj = dataDisplay(runner)
-            f = figure('Name', 'EKG', 'Color', 'white', 'ResizeFcn', {@(src, event)resizeCallback(obj, src, event)});
+            f = figure('Name', 'EKG', 'Color', 'white', 'ResizeFcn', {@(src, event)resizeCallback(obj, src, event)}, 'CloseRequestFcn', {@(src, event)closeCallback(obj, src, event, runner)});
             
-            obj.startButton = uicontrol(f, 'Style', 'pushbutton', 'String', 'Start', 'Callback',{@(src, ~)startCallback(obj, src, runner)});
-            %obj.stopButton = uicontrol(f, 'Style', 'togglebutton', 'String', 'Stop', 'Callback', {@(src, ~)stopCallback(obj, src, runner)});
+            obj.startButton = uicontrol(f, 'Style', 'pushbutton', 'String', 'Start', 'Callback',{@(src, event)startCallback(obj, src, event, runner)});
+            %obj.stopButton = uicontrol(f, 'Style', 'togglebutton', 'String', 'Stop', 'Callback', {@(src, event)stopCallback(obj, src, event, runner)});
             obj.stopButton = uicontrol(f, 'Style', 'togglebutton', 'String', 'Stop');
             obj.diagramm = axes(f, 'Box', 'on', 'xtick', [], 'ytick', []);
             
@@ -26,8 +26,8 @@ classdef dataDisplay < handle
         end
         
         function showData(obj, vData)
-           plot(obj.diagramm, vData);
-           drawnow;
+            plot(obj.diagramm, vData);
+            drawnow;
         end
     end
     
@@ -51,11 +51,27 @@ classdef dataDisplay < handle
             obj.placeComponents(src.Position);
         end
         
-        function startCallback(~, ~, runner)
+        function closeCallback(~, ~, ~, runner)
+            runner.reset;
+            delete(gcf);
+
+%             selection = questdlg('Close This Figure?',...
+%                 'Close Request Function',...
+%                 'Yes','No','Yes');
+%             switch selection
+%                 case 'Yes'
+%                     delete(obj);
+%                     delete(runner);
+%                 case 'No'
+%                     return
+%             end
+        end
+        
+        function startCallback(~, ~, ~, runner)
             runner.start;
         end
         
-        %function stopCallback(~, src, runner)
+        %function stopCallback(~, ~, ~, runner)
         %
         %end
     end

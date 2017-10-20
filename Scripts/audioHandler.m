@@ -21,7 +21,6 @@ classdef audioHandler < handle
     methods(Access = 'public')
         function obj = audioHandler(nSampleRate, nPageLenInSamples, nNumPages)
             obj.initialize(obj.getDeviceIDByName(obj.sDeviceName), nSampleRate, nPageLenInSamples, nNumPages);
-            obj.nAudioDeviceID
         end
         
         function initialize(obj, nDeviceID, nSampleRate, nPageLenInSamples, nNumPages)
@@ -36,14 +35,16 @@ classdef audioHandler < handle
         
         function start(obj)
             playrec('delPage');
-            obj.pageIDStore.enqueue(playrec('rec', obj.nPageLenInSamples, 1));
+            for i = 1:obj.nNumPages
+                 obj.pageIDStore.enqueue(playrec('rec', obj.nPageLenInSamples, 1));
+            end       
         end
         
         function vmData = waitForData(obj)
             nCurrentPageID = obj.pageIDStore.dequeue();
             playrec('block', nCurrentPageID);
             vmData = playrec('getRec', nCurrentPageID);
-            playrec('delPage', currentPageID);
+            playrec('delPage', nCurrentPageID);
             obj.pageIDStore.enqueue(playrec('rec', obj.nPageLenInSamples, 1));
         end
         
@@ -63,7 +64,6 @@ classdef audioHandler < handle
             r = length(devices);
             
             for i = 1:r
-                disp(devices(i).name);
                 if(strcmp(devices(i).name, sDeviceName))
                     nDeviceID = devices(i).deviceID;
                     return;
