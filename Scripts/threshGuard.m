@@ -1,22 +1,36 @@
 classdef threshGuard < handle
-    %THRESHGUARD Summary of this class goes here
-    %   Detailed explanation goes here
     
-    properties
-        Property1
+    properties(GetAccess = 'private', SetAccess = 'private')
+        %vPeaks
+        %bOverThreshold
     end
     
     methods
-        function obj = threshGuard(inputArg1,inputArg2)
-            %THRESHGUARD Construct an instance of this class
-            %   Detailed explanation goes here
-            obj.Property1 = inputArg1 + inputArg2;
+        function obj = threshGuard(nDataSegmentSize)
+            
         end
         
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
+        function vPeaks = detectPeaks(~, vDataSegment, nThreshold)
+            
+            nLength = length(vDataSegment);
+            
+            vCurrentPeaks = NaN;
+            vPeaks = NaN(1, nLength);
+            bOverThreshold = false;
+            
+            for i = 1:nLength
+                
+                if(vDataSegment(i) > nThreshold)
+                    bOverThreshold = true;
+                    vCurrentPeaks(i) = vDataSegment(i);
+                else  
+                    if(bOverThreshold)                        
+                        [~, I] = max(vCurrentPeaks);
+                        vPeaks(I) = vCurrentPeaks(I);
+                        vCurrentPeaks = NaN;
+                    end      
+                end
+            end
         end
     end
 end

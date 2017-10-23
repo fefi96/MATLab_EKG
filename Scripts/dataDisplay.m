@@ -25,8 +25,14 @@ classdef dataDisplay < handle
             obj.placeComponents(f.Position);
         end
         
-        function showData(obj, vData)
+        function showData(obj, vData, vPeaks, vThreshold)
+            cla(obj.diagramm);
             plot(obj.diagramm, vData);
+            hold on;
+            plot(obj.diagramm, vPeaks, 'rs');
+            hold on;
+            plot(obj.diagramm, vThreshold);
+            set(obj.diagramm, 'xtick', [], 'ytick', []);
             drawnow;
         end
     end
@@ -54,17 +60,6 @@ classdef dataDisplay < handle
         function closeCallback(~, ~, ~, runner)
             runner.reset;
             delete(gcf);
-
-%             selection = questdlg('Close This Figure?',...
-%                 'Close Request Function',...
-%                 'Yes','No','Yes');
-%             switch selection
-%                 case 'Yes'
-%                     delete(obj);
-%                     delete(runner);
-%                 case 'No'
-%                     return
-%             end
         end
         
         function startCallback(~, ~, ~, runner)

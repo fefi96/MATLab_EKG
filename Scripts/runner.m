@@ -20,14 +20,17 @@ classdef runner < handle
         
         vDataSegment
         vFilteredDataSegment
+        vPeaks;
+        nThreshold;
+        vThreshold;
     end
     
     methods(Access = 'public')
         function obj = runner()
             
             obj.reset;
-            %obj.iThreshTracker = threshTracker();
-            %obj.iThreshGuard = threshGuard();
+            obj.iThreshTracker = threshTracker(obj.nPageLenInSamples);
+            obj.iThreshGuard = threshGuard();
             %obj.iHRCalculator = heartRateCalculator();
             
             obj.iDataDisplay = dataDisplay(obj);
@@ -56,8 +59,8 @@ classdef runner < handle
             obj.iSignalHistory = signalHistory(obj.nPageLenInSamples);
             obj.iFilterBlackBox = filterBlackBox(obj.nAudioSampleRate, obj.nDecimationFactor);
             
-            obj.vDataSegment = zeros(1, length(obj.vDataSegment));
-            obj.vFilteredDataSegment = zeros(1, length(obj.vFilteredDataSegment));
+            obj.vDataSegment = zeros(1, obj.nPageLenInSamples);
+            obj.vFilteredDataSegment = zeros(1, obj.nPageLenInSamples);
         end
     end
     
@@ -74,15 +77,15 @@ classdef runner < handle
                 end
                 
                 obj.vDataSegment = obj.iAudioHandler.waitForData();
-                
                 obj.vFilteredDataSegment = obj.iFilterBlackBox.process(obj.vDataSegment);
                 obj.iSignalHistory.store(obj.vFilteredDataSegment);
-                obj.iDataDisplay.showData(obj.iSignalHistory.vData);
                 
-                % mit iThreshTracker Schwelle berechnen
-                % mit iThreshGuard Schwelle überwachen
+                [obj.nThreshold, obj.vThreshold] = obj.iThreshTracker.calculateThreshold(obj.iSignalHistory.vData);
+                obj.vPeaks = obj.iThreshGuard.detectPeaks(obj.iSignalHistory.vData, obj.nThreshold);
                 % mit iHRCalculator aktuelle Herzfrequenz berechnen
+                
                 % mit iDataDisplay Signal, Schwellenwert und Herzrate anzeigen
+                obj.iDataDisplay.showData(obj.iSignalHistory.vData, obj.vPeaks, obj.vThreshold);
             end
         end
     end

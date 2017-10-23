@@ -1,22 +1,25 @@
 classdef threshTracker < handle
-    %THRESHTRACKER Summary of this class goes here
-    %   Detailed explanation goes here
     
-    properties
-        Property1
+   properties(GetAccess = 'private', SetAccess = 'private')
+       iOldThresholds
+       vThreshold
     end
     
     methods
-        function obj = threshTracker(inputArg1,inputArg2)
-            %THRESHTRACKER Construct an instance of this class
-            %   Detailed explanation goes here
-            obj.Property1 = inputArg1 + inputArg2;
+        function obj = threshTracker(nDataSegmentSize)
+            obj.iOldThresholds = signalHistory(25);
+            obj.vThreshold = zeros(1, nDataSegmentSize);
         end
         
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
+        function [nThreshold, vThreshold] = calculateThreshold(obj, vDataSegment)
+            obj.iOldThresholds.store(mean(vDataSegment) + std(vDataSegment));
+            nThreshold = mean(obj.iOldThresholds.vData);
+            vThreshold = obj.getVisualThreshold(nThreshold);
+        end
+        
+         function vThreshold = getVisualThreshold(obj, nThreshold)
+            obj.vThreshold(1:end) = nThreshold;
+            vThreshold = obj.vThreshold;
         end
     end
 end
