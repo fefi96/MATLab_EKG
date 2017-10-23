@@ -8,18 +8,18 @@ classdef runner < handle
     end
     
     properties(GetAccess = 'private', SetAccess = 'private')
-        iAudioHandler
-        iFilterBlackBox
-        iSignalHistory
-        iThreshTracker
-        iThreshGuard
-        iHRCalculator
-        iDataDisplay
+        iAudioHandler;
+        iFilterBlackBox;
+        iSignalHistory;
+        iThreshTracker;
+        iThreshGuard;
+        iHRCalculator;
+        iDataDisplay;
         
-        iDisplayStopButton
+        iDisplayStopButton;
         
-        vDataSegment
-        vFilteredDataSegment
+        vDataSegment;
+        vFilteredDataSegment;
         vPeaks;
         nThreshold;
         vThreshold;
@@ -31,7 +31,7 @@ classdef runner < handle
             obj.reset;
             obj.iThreshTracker = threshTracker(obj.nPageLenInSamples);
             obj.iThreshGuard = threshGuard();
-            %obj.iHRCalculator = heartRateCalculator();
+            obj.iHRCalculator = heartRateCalculator((obj.nAudioSampleRate / obj.nDecimationFactor));
             
             obj.iDataDisplay = dataDisplay(obj);
             obj.iDisplayStopButton = obj.iDataDisplay.stopButton;
@@ -54,8 +54,8 @@ classdef runner < handle
                 playrec('reset');
             end
             
-            obj.iAudioHandler = audioHandler(obj.nAudioSampleRate, obj.nPageLenInSamples, obj.nPages);
-            %obj.iAudioHandler = testData;
+            %obj.iAudioHandler = audioHandler(obj.nAudioSampleRate, obj.nPageLenInSamples, obj.nPages);
+            obj.iAudioHandler = testData(obj.nPageLenInSamples);
             obj.iSignalHistory = signalHistory(obj.nPageLenInSamples);
             obj.iFilterBlackBox = filterBlackBox(obj.nAudioSampleRate, obj.nDecimationFactor);
             
@@ -77,12 +77,13 @@ classdef runner < handle
                 end
                 
                 obj.vDataSegment = obj.iAudioHandler.waitForData();
+                
                 obj.vFilteredDataSegment = obj.iFilterBlackBox.process(obj.vDataSegment);
                 obj.iSignalHistory.store(obj.vFilteredDataSegment);
                 
                 [obj.nThreshold, obj.vThreshold] = obj.iThreshTracker.calculateThreshold(obj.iSignalHistory.vData);
                 obj.vPeaks = obj.iThreshGuard.detectPeaks(obj.iSignalHistory.vData, obj.nThreshold);
-                % mit iHRCalculator aktuelle Herzfrequenz berechnen
+                obj.iHRCalculator.calculateHeartRate(obj.vPeaks);
                 
                 % mit iDataDisplay Signal, Schwellenwert und Herzrate anzeigen
                 obj.iDataDisplay.showData(obj.iSignalHistory.vData, obj.vPeaks, obj.vThreshold);
