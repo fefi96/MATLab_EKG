@@ -2,7 +2,7 @@ classdef runner < handle
     
     properties(GetAccess = 'private', Constant)
         nAudioSampleRate = 8000;
-        nPageLenInSamples = 4000;
+        nPageLenInSamples = 800;
         nPages = 5;
         nDecimationFactor = 32;
     end
@@ -29,10 +29,9 @@ classdef runner < handle
         function obj = runner()
             
             obj.reset;
-            obj.iThreshTracker = threshTracker(obj.nPageLenInSamples);
-            obj.iThreshGuard = threshGuard();
             obj.iHRCalculator = heartRateCalculator((obj.nAudioSampleRate / obj.nDecimationFactor));
-            
+            obj.iThreshGuard = threshGuard(obj.iHRCalculator, NaN);
+                      
             obj.iDataDisplay = dataDisplay(obj);
             obj.iDisplayStopButton = obj.iDataDisplay.stopButton;
         end
@@ -56,7 +55,8 @@ classdef runner < handle
             
             %obj.iAudioHandler = audioHandler(obj.nAudioSampleRate, obj.nPageLenInSamples, obj.nPages);
             obj.iAudioHandler = testData(obj.nPageLenInSamples);
-            obj.iSignalHistory = signalHistory(obj.nPageLenInSamples);
+            obj.iSignalHistory = signalHistory((obj.nAudioSampleRate / obj.nDecimationFactor) * 5);
+            obj.iThreshTracker = threshTracker(obj.iSignalHistory.nSize);
             obj.iFilterBlackBox = filterBlackBox(obj.nAudioSampleRate, obj.nDecimationFactor);
             
             obj.vDataSegment = zeros(1, obj.nPageLenInSamples);
@@ -83,9 +83,10 @@ classdef runner < handle
                 
                 [obj.nThreshold, obj.vThreshold] = obj.iThreshTracker.calculateThreshold(obj.iSignalHistory.vData);
                 obj.vPeaks = obj.iThreshGuard.detectPeaks(obj.iSignalHistory.vData, obj.nThreshold);
-                obj.iHRCalculator.calculateHeartRate(obj.vPeaks);
                 
                 % mit iDataDisplay Signal, Schwellenwert und Herzrate anzeigen
+                %disp(obj.iHRCalculator.calculateHeartRate());
+                         
                 obj.iDataDisplay.showData(obj.iSignalHistory.vData, obj.vPeaks, obj.vThreshold);
             end
         end

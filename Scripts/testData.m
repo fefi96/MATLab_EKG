@@ -17,7 +17,7 @@ classdef testData < handle
             obj.nDataAmount = r * c;
         end
         
-        function start(obj)
+        function start(~)
             disp('Started');
         end
         
@@ -31,7 +31,7 @@ classdef testData < handle
             
             vData = (obj.vData(currentIndex:(obj.nPageLen + currentIndex)))';
             obj.nIteration = obj.nIteration + 1;
-            pause(0.5);
+            pause(0.1);
         end
     end
 end

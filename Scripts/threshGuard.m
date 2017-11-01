@@ -3,14 +3,15 @@ classdef threshGuard < handle
     properties(GetAccess = 'private', SetAccess = 'private')
         %vPeaks
         %bOverThreshold
+        iHRCalculator
     end
     
     methods
-        function obj = threshGuard(nDataSegmentSize)
-            
+        function obj = threshGuard(iHRCalculator, nDataSegmentSize)
+            obj.iHRCalculator = iHRCalculator;
         end
         
-        function vPeaks = detectPeaks(~, vDataSegment, nThreshold)
+        function vPeaks = detectPeaks(obj, vDataSegment, nThreshold)
             
             nLength = length(vDataSegment);
             
@@ -26,6 +27,7 @@ classdef threshGuard < handle
                 else  
                     if(bOverThreshold)                        
                         [~, I] = max(vCurrentPeaks);
+                        obj.iHRCalculator.tellIndex(I);
                         vPeaks(I) = vCurrentPeaks(I);
                         vCurrentPeaks = NaN;
                     end      

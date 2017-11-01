@@ -1,9 +1,6 @@
 classdef signalHistory < handle
     properties(GetAccess = 'public', SetAccess = 'private')
         vData
-    end
-    
-    properties(GetAccess = 'private', SetAccess = 'private')
         nSize
     end
     
