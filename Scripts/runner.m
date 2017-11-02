@@ -29,15 +29,15 @@ classdef runner < handle
         function obj = runner()
             
             obj.reset;
+            obj.iThreshTracker = threshTracker(obj.nPageLenInSamples);
             obj.iHRCalculator = heartRateCalculator((obj.nAudioSampleRate / obj.nDecimationFactor));
-            obj.iThreshGuard = threshGuard(obj.iHRCalculator, NaN);
-                      
+            obj.iThreshGuard = threshGuard(obj.nPageLenInSamples, obj.iHRCalculator);
+            
             obj.iDataDisplay = dataDisplay(obj);
             obj.iDisplayStopButton = obj.iDataDisplay.stopButton;
         end
         
         function start(obj)
-            %obj.bRunning = true;
             obj.iAudioHandler.start;
             obj.tick;
         end
@@ -83,6 +83,7 @@ classdef runner < handle
                 
                 [obj.nThreshold, obj.vThreshold] = obj.iThreshTracker.calculateThreshold(obj.iSignalHistory.vData);
                 obj.vPeaks = obj.iThreshGuard.detectPeaks(obj.iSignalHistory.vData, obj.nThreshold);
+                disp(obj.iHRCalculator.calculateHeartRate());
                 
                 % mit iDataDisplay Signal, Schwellenwert und Herzrate anzeigen
                 %disp(obj.iHRCalculator.calculateHeartRate());
