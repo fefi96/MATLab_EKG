@@ -9,10 +9,9 @@ classdef testData < handle
     
     methods(Access = 'public')
         function obj = testData(nPageLen)
-            load('recordedData');
+            load('recordedData', 'data');
             obj.vData = data;
             obj.nPageLen = nPageLen;
-            
             [r, c] = size(obj.vData);
             obj.nDataAmount = r * c;
         end

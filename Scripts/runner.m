@@ -25,9 +25,13 @@ classdef runner < handle
         vThreshold;
     end
     
+    properties(GetAccess = 'public', SetAccess = 'private')
+       %iDataRecorder; 
+    end
+    
     methods(Access = 'public')
         function obj = runner()
-            
+            %obj.iDataRecorder = dataRecorder;
             obj.reset;
             obj.iThreshTracker = threshTracker(obj.nPageLenInSamples);
             obj.iHRCalculator = heartRateCalculator((obj.nAudioSampleRate / obj.nDecimationFactor));
@@ -56,6 +60,7 @@ classdef runner < handle
             %obj.iAudioHandler = audioHandler(obj.nAudioSampleRate, obj.nPageLenInSamples, obj.nPages);
             obj.iAudioHandler = testData(obj.nPageLenInSamples);
             obj.iSignalHistory = signalHistory((obj.nAudioSampleRate / obj.nDecimationFactor) * 5);
+            obj.iSignalHistory.nSize
             obj.iThreshTracker = threshTracker(obj.iSignalHistory.nSize);
             obj.iFilterBlackBox = filterBlackBox(obj.nAudioSampleRate, obj.nDecimationFactor);
             
@@ -82,12 +87,11 @@ classdef runner < handle
                 obj.iSignalHistory.store(obj.vFilteredDataSegment);
                 
                 [obj.nThreshold, obj.vThreshold] = obj.iThreshTracker.calculateThreshold(obj.iSignalHistory.vData);
-                obj.vPeaks = obj.iThreshGuard.detectPeaks(obj.iSignalHistory.vData, obj.nThreshold);
-                disp(obj.iHRCalculator.calculateHeartRate());
+                [obj.vHighPeaks, obj.vLowPeaks] = obj.iThreshGuard.detectPeaks(obj.vFilteredDataSegment, obj.nThreshold);
                 
                 % mit iDataDisplay Signal, Schwellenwert und Herzrate anzeigen
                 %disp(obj.iHRCalculator.calculateHeartRate());
-                         
+                %obj.iDataRecorder.store(obj.vFilteredDataSegment);    
                 obj.iDataDisplay.showData(obj.iSignalHistory.vData, obj.vPeaks, obj.vThreshold);
             end
         end

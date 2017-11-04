@@ -48,7 +48,7 @@
         function tellIndex(obj, nIndex)
            obj.nLastIndex = obj.nCurrentIndex;
            obj.nCurrentIndex = nIndex;
-           disp(['LastIndex: ' num2str(obj.nLastIndex) ', CurrentIndex: ' num2str(obj.nCurrentIndex)]);
+           %disp(['LastIndex: ' num2str(obj.nLastIndex) ', CurrentIndex: ' num2str(obj.nCurrentIndex)]);
         end
     end
 end

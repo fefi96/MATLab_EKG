@@ -13,8 +13,12 @@ classdef signalHistory < handle
         function store(obj, vSignalSegment)
             if(length(vSignalSegment) <= obj.nSize)
                 obj.vData = circshift(obj.vData, -obj.minClamp((length(vSignalSegment) + length(obj.vData) - obj.nSize), 0));
-                %obj.vData = [obj.vData(1:(abs(length(obj.vData) - length(vSignalSegment)))) vSignalSegment];
-                obj.vData = [obj.vData(1:(abs(obj.nSize - length(vSignalSegment)))) vSignalSegment'];
+                
+                if(iscolumn(vSignalSegment))
+                    obj.vData = [obj.vData(1:(abs(obj.nSize - length(vSignalSegment)))) vSignalSegment'];
+                elseif(isrow(vSignalSegment))
+                    obj.vData = [obj.vData(1:(abs(obj.nSize - length(vSignalSegment)))) vSignalSegment];
+                end
             end
         end
         
