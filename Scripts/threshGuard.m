@@ -10,7 +10,7 @@ classdef threshGuard < handle
         function obj = threshGuard(nStoreSize, iHRCalculator)
             obj.iHRCalculator = iHRCalculator;
             obj.iSignalHistoryHighPeaks = signalHistory(nStoreSize);
-            obj.iSignalHistoryLowPeaks(nStoreSize);
+            obj.iSignalHistoryLowPeaks = signalHistory(nStoreSize);
         end
         
         function [vHighPeaks, vLowPeaks] = detectPeaks(obj, vDataSegment, nThreshold)

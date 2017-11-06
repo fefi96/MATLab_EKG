@@ -7,26 +7,31 @@ classdef dataDisplay < handle
         stopButton;
         diagramm;
         textHR;
+        dispHR;
     end
     
     properties(GetAccess = 'private', Constant)
-        buttonWidthRatio = 0.4;
-        buttonSpace = 20;
-        diagrammWidthRatio = 0.9;
-        diagrammHeightRatio = 0.7;
-        
-        dataPanelHeightFactor = 0.8;
-        buttonPanelHeightFactor = 0.2;
-        
+        dataPanelHeightFactor = 0.85;
+        buttonPanelHeightFactor = 0.15;
         panelSidePadding = 10;
         panelTopDownPadding = 10;
         panelGap = 10;
+        
+        buttonPadding = 10;
+        buttonSpace = 20;
+        buttonHeight = 20;
+        
+        dataPanelInnerPadding = 10;
+        textHeight = 20;
+        textWidth = 100;
+        textFontSize = 12;
+        textFontWeight = 'bold';
     end
     
     methods(Access = 'public')
         function obj = dataDisplay(runner)
             %f = figure('Name', 'EKG', 'Color', 'white', 'ResizeFcn', {@(src, event)resizeCallback(obj, src, event)}, 'CloseRequestFcn', {@(src, event)closeCallback(obj, src, event, runner)});
-            f = figure('Name', 'EKG', 'Color', 'white', 'ResizeFcn', {@(src, event)resizeCallback(obj, src, event)});
+            f = figure('Name', 'EKG', 'Color', 'white');
             
             obj.dataPanel = uipanel('Parent', f, 'Title', 'Data Panel', 'FontSize', 10, 'Units', 'Pixels');
             obj.buttonPanel = uipanel('Parent', f, 'Title', 'Button Panel', 'FontSize', 10, 'Units', 'Pixels');
@@ -34,19 +39,25 @@ classdef dataDisplay < handle
             obj.startButton = uicontrol(obj.buttonPanel, 'Style', 'pushbutton', 'String', 'Start', 'Callback',{@(src, event)startCallback(obj, src, event, runner)});
             %obj.stopButton = uicontrol(obj.buttonPanel, 'Style', 'togglebutton', 'String', 'Stop', 'Callback', {@(src, event)stopCallback(obj, src, event, runner)});
             obj.stopButton = uicontrol(obj.buttonPanel, 'Style', 'togglebutton', 'String', 'Stop');
-            obj.textHR = uicontrol(obj.dataPanel, 'Style', 'text');
-            obj.diagramm = axes(obj.dataPanel, 'Box', 'on', 'xtick', [], 'ytick', []);
+            obj.textHR = uicontrol(obj.dataPanel, 'Style', 'text', 'String', 'HR:', 'FontSize', obj.textFontSize, 'FontWeight', obj.textFontWeight);
+            obj.dispHR = uicontrol(obj.dataPanel, 'Style', 'text', 'FontSize', obj.textFontSize, 'FontWeight', obj.textFontWeight);
+            obj.diagramm = axes(obj.dataPanel, 'Box', 'on', 'xtick', [], 'ytick', [], 'Units', 'Pixels');
+            
+            set(f, 'ResizeFcn', {@(src, event)resizeCallback(obj, src, event)});
             
             obj.placeComponents(f.Position);
         end
         
-        function showData(obj, vData, vPeaks, vThreshold)
+        function showData(obj, vData, vHighPeaks, vLowPeaks, vThreshold, sHR)
             cla(obj.diagramm);
             plot(obj.diagramm, vData);
             hold on;
-            plot(obj.diagramm, vPeaks, 'rs');
+            plot(obj.diagramm, vLowPeaks, 'rs');
+            hold on;
+            plot(obj.diagramm, vHighPeaks, 'rs');
             hold on;
             plot(obj.diagramm, vThreshold);
+            set(obj.dispHR, 'String', sHR);
             set(obj.diagramm, 'xtick', [], 'ytick', []);
             drawnow;
         end
@@ -54,27 +65,40 @@ classdef dataDisplay < handle
     
     methods(Access = 'private')
         function placeComponents(obj, figurePosition)
-            width = figurePosition(3);
-            height = figurePosition(4);
-            buttonWidth = width * obj.buttonWidthRatio;
-            %diagrammWidth = width * obj.diagrammWidthRatio;
-            %diagrammHeight = height * obj.diagrammHeightRatio;
+            figureWidth = figurePosition(3);
+            panelWidth = figureWidth - (2 * obj.panelSidePadding);
+            figureHeight = figurePosition(4);
+            panelHeight = figureHeight - (2 * obj.panelTopDownPadding) - obj.panelGap;
+            dataPanelHeight = panelHeight * obj.dataPanelHeightFactor;
             
-            dataToButtonPanelRatio = obj.dataPanelHeightFactor / obj.buttonPanelHeightFactor;
+            set(obj.dataPanel, 'Position', [obj.panelSidePadding (figureHeight - obj.panelTopDownPadding - dataPanelHeight)...
+                panelWidth dataPanelHeight]);
+            set(obj.buttonPanel, 'Position', [obj.panelSidePadding obj.panelTopDownPadding...
+                panelWidth (panelHeight * obj.buttonPanelHeightFactor)]);
             
-            set(obj.dataPanel, 'Position', [obj.panelSidePadding (1 - obj.panelTopDownPadding - obj.dataPanelHeight) 0.9 obj.dataPanelHeight]);
-            set(obj.buttonPanel, 'Position', [obj.panelSidePadding obj.panelTopDownPadding 0.9 obj.buttonPanelHeight]);
+            dataPanelWidth = obj.dataPanel.InnerPosition(3);
+            dataPanelHeight = obj.dataPanel.InnerPosition(4);
+            diagrammWidth = dataPanelWidth - (obj.dataPanelInnerPadding * 3) - obj.textWidth;
+            diagrammHeight = dataPanelHeight - (obj.dataPanelInnerPadding * 2);
+            textX = (obj.dataPanelInnerPadding * 2) + diagrammWidth;
+            textY = dataPanelHeight / 2;
             
-            set(obj.startButton, 'Position', [((width / 2) - buttonWidth - (obj.buttonSpace / 2)) 20 buttonWidth 20]);
-            set(obj.stopButton, 'Position', [((width / 2) + (obj.buttonSpace / 2)) 20 buttonWidth 20]);
-            set(obj.diagramm, 'Position', [0.05 0.2 obj.diagrammWidthRatio obj.diagrammHeightRatio]);
+            set(obj.diagramm, 'Position', [obj.dataPanelInnerPadding obj.dataPanelInnerPadding diagrammWidth diagrammHeight]);
+            set(obj.textHR, 'Position', [textX (textY + (obj.dataPanelInnerPadding / 2)) obj.textWidth obj.textHeight]);
+            set(obj.dispHR, 'Position', [textX (textY - obj.textHeight - (obj.dataPanelInnerPadding / 2)) obj.textWidth obj.textHeight]);
+            
+            buttonWidth = (obj.buttonPanel.InnerPosition(3) - (2 * obj.buttonPadding) - obj.buttonSpace) / 2;
+            buttonY = (obj.buttonPanel.InnerPosition(4) / 2) - (obj.buttonHeight / 2);
+            
+            set(obj.startButton, 'Position', [obj.buttonPadding buttonY buttonWidth obj.buttonHeight]);
+            set(obj.stopButton, 'Position', [(obj.buttonPadding + buttonWidth + obj.buttonSpace) buttonY buttonWidth obj.buttonHeight]);
         end
     end
     
     %Callbacks
     methods(Access = 'private')
         function resizeCallback(obj, src, ~)
-            obj.placeComponents(src.Position);
+            obj.placeComponents(src.InnerPosition);
         end
         
         function closeCallback(~, ~, ~, runner)
