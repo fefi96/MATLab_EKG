@@ -52,9 +52,9 @@ classdef dataDisplay < handle
             cla(obj.diagramm);
             plot(obj.diagramm, vData);
             hold on;
-            plot(obj.diagramm, vLowPeaks, 'rs');
+            plot(obj.diagramm, vLowPeaks, 'rv');
             hold on;
-            plot(obj.diagramm, vHighPeaks, 'rs');
+            plot(obj.diagramm, vHighPeaks, 'g^');
             hold on;
             plot(obj.diagramm, vThreshold);
             set(obj.dispHR, 'String', sHR);
