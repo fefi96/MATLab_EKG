@@ -33,8 +33,8 @@ classdef threshGuard < handle
                         [~, I] = max(vCurrentPeaks);
                         obj.iHRCalculator.tellIndex(I);
                         disp(['Telling Index: ' num2str(I)]);
-                        obj.iSignalHistoryHighPeaks.vData(I) = vCurrentPeaks(I);
-                        obj.iSignalHistoryLowPeaks.vData(I) = nThreshold;
+                        obj.iSignalHistoryHighPeaks.replaceAtIndex(I, vCurrentPeaks(I));
+                        obj.iSignalHistoryLowPeaks.replaceAtIndex(I, nThreshold);
                         vCurrentPeaks = NaN;
                     end      
                 end

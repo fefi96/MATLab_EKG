@@ -34,7 +34,6 @@ classdef runner < handle
         function obj = runner()
             %obj.iDataRecorder = dataRecorder;
             obj.reset;
-            obj.iThreshTracker = threshTracker(obj.nPageLenInSamples);
             obj.iHRCalculator = heartRateCalculator((obj.nAudioSampleRate / obj.nDecimationFactor));
             obj.iThreshGuard = threshGuard(obj.nPageLenInSamples, obj.iHRCalculator);
             
