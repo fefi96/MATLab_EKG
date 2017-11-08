@@ -91,7 +91,7 @@ classdef runner < handle
                 
                 obj.vFilteredDataSegment = obj.iFilterBlackBox.process(obj.vDataSegment);
                 obj.iSignalHistoryData.store(obj.vFilteredDataSegment);
-                
+                size(obj.vDataSegment)
                 [obj.nThreshold, obj.vThreshold] = obj.iThreshTracker.calculateThreshold(obj.iSignalHistoryData.vData);
                 [vLowPeaks, vHighPeaks] = obj.iThreshGuard.detectPeaks(obj.vFilteredDataSegment, obj.nThreshold);
                 obj.iSignalHistoryHighPeaks.store(vHighPeaks);

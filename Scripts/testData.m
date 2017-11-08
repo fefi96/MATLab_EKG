@@ -28,7 +28,7 @@ classdef testData < handle
                 obj.nIteration = 0;
             end
             
-            vData = (obj.vData(currentIndex:(obj.nPageLen + currentIndex)))';
+            vData = (obj.vData(currentIndex:(obj.nPageLen + currentIndex - 1)))';
             obj.nIteration = obj.nIteration + 1;
             pause(0.1);
         end
