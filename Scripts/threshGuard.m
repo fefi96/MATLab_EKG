@@ -2,46 +2,37 @@ classdef threshGuard < handle
     
     properties(GetAccess = 'private', SetAccess = 'private')
         iHRCalculator;
-        iSignalHistoryHighPeaks;
-        iSignalHistoryLowPeaks;
+        bOverThreshold = false;
+        vCurrentPeaks = NaN;
     end
     
     methods
-        function obj = threshGuard(nStoreSize, iHRCalculator)
+        function obj = threshGuard(iHRCalculator)
             obj.iHRCalculator = iHRCalculator;
-            obj.iSignalHistoryHighPeaks = signalHistory(nStoreSize);
-            obj.iSignalHistoryLowPeaks = signalHistory(nStoreSize);
         end
         
-        function [vHighPeaks, vLowPeaks] = detectPeaks(obj, vDataSegment, nThreshold)
+        function [vLowPeaks, vHighPeaks] = detectPeaks(obj, vDataSegment, nThreshold)
             
             nLength = length(vDataSegment);
-            
-            vCurrentPeaks = NaN;
-            bOverThreshold = false;
+            vLowPeaks = NaN(1, nLength);
+            vHighPeaks = NaN(1, nLength);
             
             for i = 1:nLength
                 
-                obj.iSignalHistoryHighPeaks.store(NaN);
-                obj.iSignalHistoryLowPeaks.store(NaN);
-                
                 if(vDataSegment(i) > nThreshold)
-                    bOverThreshold = true;
-                    vCurrentPeaks(i) = vDataSegment(i);
+                    obj.bOverThreshold = true;
+                    obj.vCurrentPeaks(i) = vDataSegment(i);
                 else  
-                    if(bOverThreshold)                        
-                        [~, I] = max(vCurrentPeaks);
+                    if(obj.bOverThreshold)                        
+                        [~, I] = max(obj.vCurrentPeaks);
+                        vLowPeaks(I) = nThreshold;
+                        vHighPeaks(I) = obj.vCurrentPeaks(I);
                         obj.iHRCalculator.tellIndex(I);
-                        disp(['Telling Index: ' num2str(I)]);
-                        obj.iSignalHistoryHighPeaks.replaceAtIndex(I, vCurrentPeaks(I));
-                        obj.iSignalHistoryLowPeaks.replaceAtIndex(I, nThreshold);
-                        vCurrentPeaks = NaN;
+                        %disp(['Telling Index: ' num2str(I)]);                      
+                        obj.vCurrentPeaks = NaN;
                     end      
                 end
             end
-            
-            vHighPeaks = obj.iSignalHistoryHighPeaks.vData;
-            vLowPeaks = obj.iSignalHistoryLowPeaks.vData;
         end
     end
 end

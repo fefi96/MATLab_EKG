@@ -11,14 +11,23 @@ classdef threshTracker < handle
         function obj = threshTracker(nDataSegmentSize)
             obj.iOldThresholds = signalHistory(25);
             obj.vThreshold = zeros(1, nDataSegmentSize);
-            nDataSegmentSize
         end
         
         function [nThreshold, vThreshold] = calculateThreshold(obj, vDataSegment)
-            nNewThreshold = mean(vDataSegment) + obj.weightSTD * std(vDataSegment);
             
+            % Method I
+            %obj.iOldThresholds.store(mean(vDataSegment) + obj.weightSTD * std(vDataSegment));
+            %nThreshold = mean(obj.iOldThresholds.vData);
+            
+            % Method II
+            nNewThreshold = mean(vDataSegment) + obj.weightSTD * std(vDataSegment);
             nThreshold = (((mean(obj.iOldThresholds.vData) * obj.weightOldThresholds) + nNewThreshold) / (obj.weightOldThresholds + 1));
             obj.iOldThresholds.store(nThreshold);
+            
+            % Method III
+            %nThreshold = (sum(obj.iOldThresholds.vData * obj.weightOldThresholds) + nNewThreshold) / (obj.weightOldThresholds * obj.iOldThresholds.nSize + 1);
+            %obj.iOldThresholds.store(nThreshold);
+            
             vThreshold = obj.getVisualThreshold(nThreshold);
         end
         

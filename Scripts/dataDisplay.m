@@ -42,7 +42,7 @@ classdef dataDisplay < handle
             obj.textHR = uicontrol(obj.dataPanel, 'Style', 'text', 'String', 'HR:', 'FontSize', obj.textFontSize, 'FontWeight', obj.textFontWeight);
             obj.dispHR = uicontrol(obj.dataPanel, 'Style', 'text', 'FontSize', obj.textFontSize, 'FontWeight', obj.textFontWeight);
             obj.diagramm = axes(obj.dataPanel, 'Box', 'on', 'xtick', [], 'ytick', [], 'Units', 'Pixels');
-            
+
             set(f, 'ResizeFcn', {@(src, event)resizeCallback(obj, src, event)});
             
             obj.placeComponents(f.Position);

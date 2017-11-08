@@ -22,10 +22,6 @@ classdef signalHistory < handle
             end
         end
         
-        function replaceAtIndex(obj, nIndex, nReplace)
-            obj.vData(nIndex) = nReplace;
-        end
-        
         function plus(obj, vSignalSegment)
             obj.store(vSignalSegment);
         end
