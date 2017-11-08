@@ -1,16 +1,14 @@
- classdef heartRateCalculator < handle
+classdef heartRateCalculator < handle
     
     properties(GetAccess = 'private', SetAccess = 'private')
         nRate;
-        nLastIndex;
-        nCurrentIndex;
+        nCurrentTicks;
     end
     
     methods(Access = 'public')
         function obj = heartRateCalculator(nRate)
             obj.nRate = nRate;
-            obj.nLastIndex = NaN;
-            obj.nCurrentIndex = NaN;
+            obj.nCurrentTicks = NaN;
         end
         
         %         function calculateHeartRate(obj, vPeaks)
@@ -40,15 +38,19 @@
         function nHR = calculateHeartRate(obj)
             nHR = NaN;
             
-            if(isfinite(obj.nLastIndex) && isfinite(obj.nCurrentIndex))
-               nHR = (obj.nCurrentIndex - obj.nLastIndex) / obj.nRate; 
+            if(isfinite(obj.nCurrentTicks))
+                nT1 = 0;
+                nT2 = obj.calculateTimeBetween;
+                nHR = 60 / (nT2 - nT1);
             end
         end
         
-        function tellIndex(obj, nIndex)
-           obj.nLastIndex = obj.nCurrentIndex;
-           obj.nCurrentIndex = nIndex;
-           %disp(['LastIndex: ' num2str(obj.nLastIndex) ', CurrentIndex: ' num2str(obj.nCurrentIndex)]);
+        function nTime = calculateTimeBetween(obj)
+            nTime = obj.nCurrentTicks / obj.nRate;
+        end
+        
+        function tellTicks(obj, nTicks)
+            obj.nCurrentTicks = nTicks;
         end
     end
 end

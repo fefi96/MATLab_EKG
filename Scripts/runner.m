@@ -96,7 +96,6 @@ classdef runner < handle
                 [vLowPeaks, vHighPeaks] = obj.iThreshGuard.detectPeaks(obj.vFilteredDataSegment, obj.nThreshold);
                 obj.iSignalHistoryHighPeaks.store(vHighPeaks);
                 obj.iSignalHistoryLowPeaks.store(vLowPeaks);
-                vLowPeaks
                 nHR = obj.iHRCalculator.calculateHeartRate();
                 
                 %obj.iDataRecorder.store(obj.vFilteredDataSegment);    

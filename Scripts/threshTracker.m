@@ -1,10 +1,10 @@
 classdef threshTracker < handle
     
     properties(GetAccess = 'private', SetAccess = 'private')
-        iOldThresholds
-        vThreshold
-        weightOldThresholds = 5
-        weightSTD = 2
+        iOldThresholds;
+        vThreshold;
+        nWeightOldThresholds = 5;
+        nWeightSTD = 1;
     end
     
     methods
@@ -20,8 +20,8 @@ classdef threshTracker < handle
             %nThreshold = mean(obj.iOldThresholds.vData);
             
             % Method II
-            nNewThreshold = mean(vDataSegment) + obj.weightSTD * std(vDataSegment);
-            nThreshold = (((mean(obj.iOldThresholds.vData) * obj.weightOldThresholds) + nNewThreshold) / (obj.weightOldThresholds + 1));
+            nNewThreshold = mean(vDataSegment) + obj.nWeightSTD * std(vDataSegment);
+            nThreshold = (((mean(obj.iOldThresholds.vData) * obj.nWeightOldThresholds) + nNewThreshold) / (obj.nWeightOldThresholds + 1));
             obj.iOldThresholds.store(nThreshold);
             
             % Method III
