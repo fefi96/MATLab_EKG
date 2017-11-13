@@ -3,8 +3,11 @@ classdef threshGuard < handle
     properties(GetAccess = 'private', SetAccess = 'private')
         iHRCalculator;
         bOverThreshold = false;
+        bCurrentMaxChanged = false;
         nCurrentTicks;
-        vCurrentPeaks;
+        %vCurrentPeaks;
+        nCurrentMax = 0;
+        nCurrentMaxIndex = 0;
     end
     
     methods(Access = 'public')
@@ -22,32 +25,63 @@ classdef threshGuard < handle
             for i = 1:nLength
                 
                 obj.nCurrentTicks = obj.nCurrentTicks + 1;
-                disp(['nCurrentTicks: ' num2str(obj.nCurrentTicks)]);
+                %                 disp(['nCurrentTicks: ' num2str(obj.nCurrentTicks)]);
+                %                 if(vDataSegment(i) > nThreshold)
+                %                     obj.bOverThreshold = true;
+                %                     obj.vCurrentPeaks = [obj.vCurrentPeaks vDataSegment(i)];
+                %                 else
+                %                     if(obj.bOverThreshold)
+                %                         [~, maxIndex] = max(obj.vCurrentPeaks);
+                %
+                %                         vLowPeaks(maxIndex) = nThreshold;
+                %                         vHighPeaks(maxIndex) = obj.vCurrentPeaks(maxIndex);
+                %                         obj.iHRCalculator.tellTicks(obj.nCurrentTicks);
+                %                         obj.reset();
+                %                     end
+                %
+                %                     obj.bOverThreshold = false;
+                %                 end
+                %
+                %                 disp(['bOverThreshold: ' num2str(obj.bOverThreshold)]);
+                
                 if(vDataSegment(i) > nThreshold)
                     obj.bOverThreshold = true;
-                    obj.vCurrentPeaks = [obj.vCurrentPeaks vDataSegment(i)];
-                else  
-                    if(obj.bOverThreshold)                        
-                        [~, maxIndex] = max(obj.vCurrentPeaks);
+                    
+                    if(vDataSegment(i) > obj.nCurrentMax)
+                        obj.nCurrentMax = vDataSegment(i);
+                        obj.nCurrentMaxIndex = i;
+                        obj.bCurrentMaxChanged = true;
+                    else
                         
-                        vLowPeaks(maxIndex) = nThreshold;
-                        vHighPeaks(maxIndex) = obj.vCurrentPeaks(maxIndex);
-                        obj.iHRCalculator.tellTicks(obj.nCurrentTicks);
-                        obj.reset();
+                        obj.bCurrentMaxChanged = false;
+                    end
+                else
+                    %if(obj.bCurrentMaxChanged)
+                    if(obj.bOverThreshold)
+                        
+                        vLowPeaks(obj.nCurrentMaxIndex) = nThreshold;
+                        vHighPeaks(obj.nCurrentMaxIndex) = obj.nCurrentMax;
+                        obj.reset;
                     end
                     
                     obj.bOverThreshold = false;
                 end
-                
-                disp(['bOverThreshold: ' num2str(obj.bOverThreshold)]);
+            end
+            
+            if(~obj.bCurrentMaxChanged)
+                vLowPeaks(obj.nCurrentMaxIndex) = nThreshold;
+                vHighPeaks(obj.nCurrentMaxIndex) = obj.nCurrentMax;
+                obj.reset;
             end
         end
     end
     
     methods(Access = 'private')
         function reset(obj)
-           obj.nCurrentTicks = 0;
-           obj.vCurrentPeaks = [];
+            %obj.nCurrentTicks = 0;
+            %obj.vCurrentPeaks = [];
+            obj.nCurrentMax = 0;
+            obj.nCurrentMaxIndex = 0;
         end
     end
 end
