@@ -26,7 +26,6 @@ classdef threshGuard < handle
                 if(vDataSegment(i) > nThreshold)
                     obj.bOverThreshold = true;
                     obj.vCurrentPeaks = [obj.vCurrentPeaks vDataSegment(i)];
-                    obj.vCurrentPeaks
                 else  
                     if(obj.bOverThreshold)                        
                         [~, maxIndex] = max(obj.vCurrentPeaks);

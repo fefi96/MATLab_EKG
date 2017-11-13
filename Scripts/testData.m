@@ -1,8 +1,8 @@
 classdef testData < handle
     
     properties(GetAccess = 'public', SetAccess = 'private')
-        vData
-        nPageLen
+        vData;
+        nPageLen;
         nIteration = 0;
         nDataAmount;
     end

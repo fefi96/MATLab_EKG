@@ -57,7 +57,7 @@ classdef dataDisplay < handle
             plot(obj.diagramm, vHighPeaks, 'g^');
             hold on;
             plot(obj.diagramm, vThreshold);
-            set(obj.dispHR, 'String', sHR);
+            set(obj.dispHR, 'String', int16(sHR));
             set(obj.diagramm, 'xtick', [], 'ytick', []);
             drawnow;
         end
