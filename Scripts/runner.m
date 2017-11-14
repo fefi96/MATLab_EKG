@@ -8,7 +8,7 @@ classdef runner < handle
         nSecondsToStore = 5;
     end
     
-    properties(GetAccess = 'private', SetAccess = 'private')
+    properties(GetAccess = 'public', SetAccess = 'private')
         iAudioHandler;
         iFilterBlackBox;
         iSignalHistoryData;

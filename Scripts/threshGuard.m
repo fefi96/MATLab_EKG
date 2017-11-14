@@ -1,6 +1,6 @@
 classdef threshGuard < handle
     
-    properties(GetAccess = 'private', SetAccess = 'private')
+    properties(GetAccess = 'public', SetAccess = 'private')
         iHRCalculator;
         bOverThreshold = false;
         bCurrentMaxChanged = false;
@@ -68,7 +68,7 @@ classdef threshGuard < handle
                 end
             end
             
-            if(~obj.bCurrentMaxChanged)
+            if(~obj.bCurrentMaxChanged && obj.bOverThreshold)
                 vLowPeaks(obj.nCurrentMaxIndex) = nThreshold;
                 vHighPeaks(obj.nCurrentMaxIndex) = obj.nCurrentMax;
                 obj.reset;
