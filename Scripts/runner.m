@@ -8,7 +8,7 @@ classdef runner < handle
         nSecondsToStore = 5;
     end
     
-    properties(GetAccess = 'public', SetAccess = 'private')
+    properties(GetAccess = 'private', SetAccess = 'private')
         iAudioHandler;
         iFilterBlackBox;
         iSignalHistoryData;
@@ -39,7 +39,8 @@ classdef runner < handle
             obj.nStoreSize = (obj.nAudioSampleRate / obj.nDecimationFactor) * obj.nSecondsToStore;
             obj.reset;
             obj.iHRCalculator = heartRateCalculator((obj.nAudioSampleRate / obj.nDecimationFactor));
-            obj.iThreshGuard = threshGuard(obj.iHRCalculator);
+            %obj.iThreshGuard = threshGuard(obj.iHRCalculator);
+            obj.iThreshGuard = threshGuardSimple(obj.iHRCalculator);
             
             obj.iDataDisplay = dataDisplay(obj);
             obj.iDisplayStopButton = obj.iDataDisplay.stopButton;
@@ -61,8 +62,8 @@ classdef runner < handle
                 playrec('reset');
             end
             
-            %obj.iAudioHandler = audioHandler(obj.nAudioSampleRate, obj.nPageLenInSamples, obj.nPages);
-            obj.iAudioHandler = testData(obj.nPageLenInSamples);
+            obj.iAudioHandler = audioHandler(obj.nAudioSampleRate, obj.nPageLenInSamples, obj.nPages);
+            %obj.iAudioHandler = testData(obj.nPageLenInSamples);
             obj.iSignalHistoryData = signalHistory(obj.nStoreSize);
             obj.iSignalHistoryHighPeaks = signalHistory(obj.nStoreSize);
             obj.iSignalHistoryLowPeaks = signalHistory(obj.nStoreSize);
