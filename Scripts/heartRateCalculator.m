@@ -40,13 +40,13 @@ classdef heartRateCalculator < handle
             
             if(isfinite(obj.nCurrentTicks))
                 nT1 = 0;
-                nT2 = obj.calculateTimeBetween;
+                nT2 = obj.calculateTimeBetween(obj.nCurrentTicks);
                 nHR = 60 / (nT2 - nT1);
             end
         end
         
-        function nTime = calculateTimeBetween(obj)
-            nTime = obj.nCurrentTicks / obj.nRate;
+        function nTime = calculateTimeBetween(obj, nCurrentTicks)
+            nTime = nCurrentTicks / obj.nRate;
         end
         
         function tellTicks(obj, nTicks)

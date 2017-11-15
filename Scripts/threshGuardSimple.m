@@ -2,14 +2,14 @@ classdef threshGuardSimple < handle
     
     
     properties(Access = 'private')
-         iHRCalculator;
-         bOverThreshold = false;
-         nCurrentTicks = 0;
+        iHRCalculator;
+        bOverThreshold = false;
+        nCurrentTicks = 0;
     end
     
     methods(Access = 'public')
         function obj= threshGuardSimple(iHRCalculator)
-           obj.iHRCalculator = iHRCalculator;
+            obj.iHRCalculator = iHRCalculator;
         end
         
         function [vLowPeaks, vHighPeaks] = detectPeaks(obj, vDataSegment, nThreshold)
@@ -23,9 +23,12 @@ classdef threshGuardSimple < handle
                 
                 if(vDataSegment(i) > nThreshold)
                     if(~obj.bOverThreshold)
-                        vHighPeaks(i) = vDataSegment(i);
-                        obj.iHRCalculator.tellTicks(obj.nCurrentTicks);
-                        obj.nCurrentTicks = 0;
+                        
+                        if(obj.iHRCalculator.calculateTimeBetween(obj.nCurrentTicks) > 0.2)
+                            obj.iHRCalculator.tellTicks(obj.nCurrentTicks);
+                            vHighPeaks(i) = vDataSegment(i);
+                            obj.nCurrentTicks = 0;
+                        end
                     end
                     
                     obj.bOverThreshold = true;
@@ -33,7 +36,7 @@ classdef threshGuardSimple < handle
                     obj.bOverThreshold = false;
                 end
             end
-        end     
+        end
     end
 end
 
